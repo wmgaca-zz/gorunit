@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"flag"
 	"fmt"
 	"log"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+
+	"github.com/goji/httpauth"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -23,6 +26,10 @@ var flagKubeconfigPath string
 var flagInCluster bool
 
 var deletePolicy = meta_v1.DeletePropagationForeground
+
+var authUsername = os.Getenv("GORUNIT_USERNAME")
+
+var authPassword = os.Getenv("GORUNIT_PASSWORD")
 
 func getInClusterConfig() (*rest.Config, error) {
 	return rest.InClusterConfig()
@@ -181,8 +188,15 @@ func main() {
 	r.HandleFunc("/v1/jobs", handleCreateJob).Methods("POST")
 	r.HandleFunc("/", handleHome).Methods("GET")
 
+	var handler http.Handler
+	if len(authUsername) != 0 && len(authPassword) != 0 {
+		handler = httpauth.SimpleBasicAuth(authUsername, authPassword)(r)
+	} else {
+		handler = r
+	}
+
 	s := &http.Server{
-		Handler:        r,
+		Handler:        handler,
 		Addr:           ":10777",
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
