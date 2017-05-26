@@ -1,0 +1,24 @@
+#!/bin/groovy
+
+node {
+	stage('Build') {
+		sh('make build')
+	}
+
+	stage('Push') {
+        authenticate {
+			sh('make push')
+        }
+	}
+}
+
+def authenticate(Closure pipeline) {
+    withCredentials([
+            usernamePassword(
+                    credentialsId: 'core-servives-artifactory',
+                    passwordVariable: 'ORG_GRADLE_PROJECT_ARTIFACTORY_PASSWORD',
+                    usernameVariable: 'ORG_GRADLE_PROJECT_ARTIFACTORY_USER')]
+    ) {
+        pipeline()
+    }
+}
