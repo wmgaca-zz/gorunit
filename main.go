@@ -13,9 +13,9 @@ import (
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/rest"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	batch_v1 "k8s.io/client-go/pkg/apis/batch/v1"
-	rest "k8s.io/client-go/rest"
 )
 
 var flagKubeconfigPath string
@@ -131,8 +131,6 @@ func handleCreateJob(w http.ResponseWriter, r *http.Request) {
 	name := fmt.Sprintf("%s-%s", job.ObjectMeta.Name, uuid.New().String())
 	job.ObjectMeta.Name = name
 	job.Spec.Template.ObjectMeta.Name = name
-
-	fmt.Printf("JOB: %v+\n", job)
 
 	j, err := client.BatchV1().Jobs(job.ObjectMeta.Namespace).Create(job)
 	if err != nil {
