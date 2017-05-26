@@ -197,12 +197,12 @@ func main() {
 
 	s := &http.Server{
 		Handler:        handler,
-		Addr:           ":10777",
+		Addr:           ":8080",
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	log.Println("Listening on :10777")
+	log.Println("Listening on :8080")
 	log.Fatal(s.ListenAndServe())
 }

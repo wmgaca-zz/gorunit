@@ -7,6 +7,6 @@ COPY . .
 RUN go-wrapper download
 RUN go-wrapper install
 
-EXPOSE 10777
+EXPOSE 8080
 
 CMD ["go-wrapper", "run"]
